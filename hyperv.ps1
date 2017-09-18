@@ -8,8 +8,9 @@ Disable-ScheduledTask -TaskName "CreateLevel2VM"
 $createscript |Out-file $stscriptpath -force
 
 $action = New-ScheduledTaskAction -Execute "Powershell.exe" -Argument "-NoProfile -WindowStyle Hidden $stscriptpath"
-$trigger = New-ScheduledTaskTrigger -AtLogOn
-Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "CreateLevel2VM" -Description "Create Level 2 VM in Hyper-V for troubleshooting"
+$trigger = New-ScheduledTaskTrigger -AtStartUp
+$principal = New-ScheduledTaskPrincipal -UserID "NT AUTHORITY\SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "CreateLevel2VM" -Description "Create Level 2 VM in Hyper-V for troubleshooting" -Principal $principal
 
 Install-WindowsFeature -Name Hyper-V -IncludeManagementTools -Restart  
 Restart-Computer
